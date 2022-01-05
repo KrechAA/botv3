@@ -21,6 +21,7 @@ public class DbIndexRepositoryImpl implements IndexRepository {
 
     @Override
     public void addNewIndexAndWords(Indexkey key, Set<String> newSetOfWords) {
+
         char firstLetter = key.getFirstChar();
         String otherLetters = key.getOtherChars();
         String firstLetterStr = Character.toString(firstLetter);
