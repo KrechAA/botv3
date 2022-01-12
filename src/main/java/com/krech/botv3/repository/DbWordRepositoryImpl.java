@@ -1,7 +1,7 @@
-package com.krech.botv2.repository;
+package com.krech.botv3.repository;
 
-import com.krech.botv2.config.DbConnector;
-import com.krech.botv2.domain.DbWordObject;
+import com.krech.botv3.config.DbConnector;
+import com.krech.botv3.domain.DbWordObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

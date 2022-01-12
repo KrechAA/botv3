@@ -1,5 +1,5 @@
-import com.krech.botv2.repository.InMemoryIndexRepositoryImpl;
-import com.krech.botv2.domain.Indexkey;
+import com.krech.botv3.repository.InMemoryIndexRepositoryImpl;
+import com.krech.botv3.domain.Indexkey;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

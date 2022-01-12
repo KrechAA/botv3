@@ -1,4 +1,4 @@
-package com.krech.botv2;
+package com.krech.botv3;
 
 import java.sql.*;
 

@@ -1,4 +1,4 @@
-package com.krech.botv2.config;
+package com.krech.botv3.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

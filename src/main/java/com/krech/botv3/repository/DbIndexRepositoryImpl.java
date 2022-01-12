@@ -1,14 +1,18 @@
-package com.krech.botv2.repository;
+package com.krech.botv3.repository;
 
-import com.krech.botv2.config.DbConnector;
-import com.krech.botv2.domain.Indexkey;
+import com.krech.botv3.config.DbConnector;
+import com.krech.botv3.domain.Indexkey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 @Repository
 public class DbIndexRepositoryImpl implements IndexRepository {
     private final DbConnector dbConnector;
@@ -21,6 +25,7 @@ public class DbIndexRepositoryImpl implements IndexRepository {
 
     @Override
     public void addNewIndexAndWords(Indexkey key, Set<String> newSetOfWords) {
+
         char firstLetter = key.getFirstChar();
         String otherLetters = key.getOtherChars();
         String firstLetterStr = Character.toString(firstLetter);
@@ -71,6 +76,12 @@ public class DbIndexRepositoryImpl implements IndexRepository {
 
         String firstLetterStr = Character.toString(key.getFirstChar());
         Set<String> words = new HashSet<>();
+
+        try {
+            dbConnector.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         try (Statement stmt = dbConnector.getConnection().createStatement()) {
             String selectSql = "SELECT * FROM indexes as i " +
                     "JOIN idwords_idindex " +
@@ -84,6 +95,7 @@ public class DbIndexRepositoryImpl implements IndexRepository {
                 while (resultSet.next()) {
                     words.add(resultSet.getString("name"));
                 }
+                dbConnector.getConnection().commit();
             }
         } catch (SQLException e) {
             throw new IllegalStateException(e);

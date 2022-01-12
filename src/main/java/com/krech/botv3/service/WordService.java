@@ -1,8 +1,8 @@
-package com.krech.botv2.service;
+package com.krech.botv3.service;
 
-import com.krech.botv2.domain.Indexkey;
-import com.krech.botv2.repository.IndexRepository;
-import com.krech.botv2.repository.WordRepository;
+import com.krech.botv3.domain.Indexkey;
+import com.krech.botv3.repository.IndexRepository;
+import com.krech.botv3.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

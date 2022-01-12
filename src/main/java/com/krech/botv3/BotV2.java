@@ -1,10 +1,6 @@
-package com.krech.botv2;
+package com.krech.botv3;
 
-import com.krech.botv2.config.DbConnector;
-import com.krech.botv2.repository.DbIndexRepositoryImpl;
-import com.krech.botv2.repository.DbWordRepositoryImpl;
-import com.krech.botv2.repository.WordRepository;
-import com.krech.botv2.service.WordService;
+import com.krech.botv3.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

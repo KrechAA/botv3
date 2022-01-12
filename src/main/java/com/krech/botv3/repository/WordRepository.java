@@ -1,4 +1,4 @@
-package com.krech.botv2.repository;
+package com.krech.botv3.repository;
 
 import java.util.List;
 

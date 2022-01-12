@@ -1,4 +1,4 @@
-package com.krech.botv2.domain;
+package com.krech.botv3.domain;
 
 public class DbWordObject {
 

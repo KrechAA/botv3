@@ -1,6 +1,6 @@
-package com.krech.botv2.repository;
+package com.krech.botv3.repository;
 
-import com.krech.botv2.domain.Indexkey;
+import com.krech.botv3.domain.Indexkey;
 
 import java.util.Map;
 import java.util.Set;
