@@ -9,18 +9,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.IOException;
 import java.util.List;
 
-@SpringBootApplication(scanBasePackages = {"com.krech.botv2.repository", "com.krech.botv2.service", "com.krech.botv2.config"})
+@SpringBootApplication
+        //(scanBasePackages = {"com.krech.botv3.repository", "com.krech.botv3.service", "com.krech.botv3.config"})
 public class BotV2 implements CommandLineRunner {
     @Autowired
     private WordService wordService;
 
     public static void main(String[] args) throws IOException {
+
         SpringApplication.run(BotV2.class);
 
     }
 
     @Override
     public void run(String... args) throws Exception {
+        wordService.preparingRepo();
         List<String> result = wordService.searchWordsForClient("Кмтач");
         System.out.println(String.join(", ", result));
     }

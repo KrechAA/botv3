@@ -102,7 +102,7 @@ class WordServiceTest {
 
        /* when(wordRepository.getWordsByChar(eq('Ф'))).thenReturn(List.of("Феникс", "Фуфайка", "Фениксятина"));
         when(wordRepository.getWordsByChar(eq('З'))).thenReturn(null);*/
-          wordService.saveWords(words);
+   //       wordService.saveWords(words);
 
         verify(wordRepository, times(1)).addOneWord(eq("Феникс"));
         verify(wordRepository, times(1)).addOneWord(eq("Фуфайка"));

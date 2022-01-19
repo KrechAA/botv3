@@ -1,11 +1,16 @@
 package com.krech.botv3.repository;
 
 import com.krech.botv3.domain.Indexkey;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
+@ConditionalOnProperty(
+        value="dbconfiguration.repoType",
+        havingValue  = "inmemory")
+@Repository
 public class InMemoryIndexRepositoryImpl implements IndexRepository {
 
 

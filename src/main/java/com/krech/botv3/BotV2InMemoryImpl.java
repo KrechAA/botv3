@@ -11,19 +11,19 @@ import java.util.List;
 public class BotV2InMemoryImpl {
 
     public static void main(String[] args) throws IOException {
-        InMemoryIndexRepositoryImpl inMemoryIndexRepositoryImpl = new InMemoryIndexRepositoryImpl();
-        WordRepository wordRepository = new InMemoryWordRepositoryImp();
-        WordService wordService = new WordService(inMemoryIndexRepositoryImpl, wordRepository);
-
-
-
-        wordService.saveWords(wordService.readWordsFromFile());
-
-
-
-
-        List<String> result = wordService.searchWordsForClient("Авкаотп");
-        System.out.println(result);
+//        InMemoryIndexRepositoryImpl inMemoryIndexRepositoryImpl = new InMemoryIndexRepositoryImpl();
+//        WordRepository wordRepository = new InMemoryWordRepositoryImp();
+//        WordService wordService = new WordService(inMemoryIndexRepositoryImpl, wordRepository);
+//
+//
+//
+//        wordService.saveWords(wordService.readWordsFromFile());
+//
+//
+//
+//
+//        List<String> result = wordService.searchWordsForClient("Авкаотп");
+//        System.out.println(result);
     }
 }
 

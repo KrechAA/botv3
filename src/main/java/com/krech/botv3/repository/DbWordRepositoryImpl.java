@@ -1,14 +1,16 @@
 package com.krech.botv3.repository;
 
+import com.krech.botv3.config.DbConfiguration;
 import com.krech.botv3.config.DbConnector;
 import com.krech.botv3.domain.DbWordObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+@ConditionalOnBean(DbConfiguration.class)
 @Repository
 public class DbWordRepositoryImpl implements WordRepository {
     private final DbConnector dbConnector;

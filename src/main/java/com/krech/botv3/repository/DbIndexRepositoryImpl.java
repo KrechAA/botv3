@@ -1,8 +1,10 @@
 package com.krech.botv3.repository;
 
+import com.krech.botv3.config.DbConfiguration;
 import com.krech.botv3.config.DbConnector;
 import com.krech.botv3.domain.Indexkey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -13,8 +15,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@ConditionalOnBean(DbConfiguration.class)
 @Repository
 public class DbIndexRepositoryImpl implements IndexRepository {
+
     private final DbConnector dbConnector;
 
     @Autowired

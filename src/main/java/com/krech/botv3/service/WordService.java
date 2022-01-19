@@ -4,6 +4,7 @@ import com.krech.botv3.domain.Indexkey;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,10 +20,19 @@ public class WordService {
     private final IndexRepository indexRepository;
     private final WordRepository wordRepository;
 
+    @Value("${dbconfiguration.repoType}")
+    private String repoType;
+
     @Autowired
     public WordService(IndexRepository indexRepository, WordRepository wordRepository) {
         this.indexRepository = indexRepository;
         this.wordRepository = wordRepository;
+    }
+
+
+
+    public void preparingRepo() throws IOException {
+       if (repoType.equals("inmemory")) saveWords(readWordsFromFile());
     }
 
     /**
@@ -34,6 +44,7 @@ public class WordService {
         return list = Files.readAllLines(path);
 
     }
+
 
     /**
      * Получаем список слов и сохраняем в репозиторий
@@ -56,10 +67,10 @@ public class WordService {
         //save to com.krech.BotV2.repository.WordRepository
     }
 
-    void loadWords() throws IOException {
-        List<String> words = readWordsFromFile();
-        saveWords(words);
-    }
+//    void loadWords() throws IOException {
+//        List<String> words = readWordsFromFile();
+//        saveWords(words);
+//    }
 
     /**
      * @param str список запрошенных букв первая буква списка - первая буква слова
@@ -175,9 +186,10 @@ public class WordService {
             char[] charsWithoutFirstLetter = new char[chars.length - 1];
             System.arraycopy(chars, 1, charsWithoutFirstLetter, 0, chars.length - 1);
             indexkey.setOtherChars(new String(charsWithoutFirstLetter));
-            if (indexRepository.getWords(indexkey).size() == 0) { //TODO заменить getAll на get. ищм в репо индекс по индекскею. пустые индексы не сохраняем
+            if (indexRepository.getWords(indexkey) == null  ) { //TODO заменить getAll на get. ищм в репо индекс по индекскею. пустые индексы не сохраняем
                 indexRepository.addNewIndexAndWords(indexkey, words);
             } else {
+
                 indexRepository.getWords(indexkey).addAll(words);//TODO заменить addAll на add в цикле.
             }
         } else {

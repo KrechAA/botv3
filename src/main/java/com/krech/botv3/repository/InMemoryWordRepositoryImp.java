@@ -1,9 +1,16 @@
 package com.krech.botv3.repository;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@ConditionalOnProperty(
+        value="dbconfiguration.repoType",
+        havingValue  = "inmemory")
+@Repository
 public class InMemoryWordRepositoryImp implements WordRepository {
     // Хранилище слов
 
