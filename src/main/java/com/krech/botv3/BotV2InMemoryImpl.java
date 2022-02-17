@@ -1,12 +1,6 @@
 package com.krech.botv3;
 
-import com.krech.botv3.repository.InMemoryIndexRepositoryImpl;
-import com.krech.botv3.repository.InMemoryWordRepositoryImp;
-import com.krech.botv3.repository.WordRepository;
-import com.krech.botv3.service.WordService;
-
 import java.io.IOException;
-import java.util.List;
 
 public class BotV2InMemoryImpl {
 

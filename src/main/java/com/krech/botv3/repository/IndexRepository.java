@@ -1,18 +1,22 @@
 package com.krech.botv3.repository;
 
-import com.krech.botv3.domain.Indexkey;
+import com.krech.botv3.domain.IndexObject;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-public interface IndexRepository {
+@Repository
 
-   public void addNewIndexAndWords(Indexkey key, Set<String> newSetOfWords);
+public interface IndexRepository extends CrudRepository <IndexObject, Integer> {
 
-    public Set <String> getWords(Indexkey key);
 
-    public Map<Indexkey, Set<String>> getAll ();
 
-    public void addNewWordsToExistingIndex(Indexkey indexkey, Set <String> set);
+
+    List <IndexObject> findByFirstLetter(String str);
+
+    IndexObject findByFirstLetterAndOtherLetter(String firstLetter, String otherLetters);
+
+
 
 }

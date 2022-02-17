@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(
         value="dbconfiguration.repoType",
         havingValue  = "Db")
-@Configuration
+
 //@ConfigurationProperties(prefix = "dbconfiguration")
 //@PropertySource("classpath:application.properties")
 public class DbConfiguration {
@@ -28,7 +28,7 @@ public class DbConfiguration {
 
 
 
-    @Bean
+
     @Scope("singleton")
     public DbConnector dbConnector(){
         return new DbConnector(urlDb, userDb, passDb);
