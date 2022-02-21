@@ -70,8 +70,7 @@ class WordServiceTest {
     @Test
     void searchIndexTest() {
         char[] chars = new char[]{'Ф', 'е', 'н', 'и', 'к', 'с'};
-        List<String> result = null;
-        char[] otherChars = new char[]{'е', 'н', 'и', 'к', 'с'};
+        List<String> result;
 
         WordObject fenix = new WordObject("Феникс", "Ф");
         WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
@@ -88,7 +87,6 @@ class WordServiceTest {
         when(indexRepository.findByFirstLetter(String.valueOf(chars[0]))).thenReturn(List.of(fenixIndex));
 
         result = wordService.searchIndex(chars);
-        //     assertThrows(NoSuchElementException.class, () -> wordService.searchIndex(chars));
 
 
         assertEquals(result, List.of("Феникс", "Фениксятина"));
@@ -100,39 +98,13 @@ class WordServiceTest {
     void searchIndexTestOfException() {
         char[] chars = new char[]{'Ф', 'е', 'н', 'и', 'к', 'с'};
 
-
-        List<IndexObject> dbIndexObjectList = null;
-
-
-        when(indexRepository.findByFirstLetter(String.valueOf(chars[0]))).thenReturn(dbIndexObjectList);
-
+        when(indexRepository.findByFirstLetter(String.valueOf(chars[0]))).thenReturn(null);
 
         assertThrows(NoSuchElementException.class, () -> wordService.searchIndex(chars));
 
 
     }
 
-
-//    @Test
-//    void saveWordsTest() {
-//        List<String> words = new ArrayList<>();
-//        List<String> listInBucket = new ArrayList<>();
-//        words.add("Феникс");
-//        words.add("Фуфайка");
-//        words.add("Фениксятина");
-//        words.add("Зло");
-//
-//        when(wordRepository.getWordsByChar(eq('Ф'))).thenReturn(List.of("Феникс", "Фуфайка", "Фениксятина"));
-//        when(wordRepository.getWordsByChar(eq('З'))).thenReturn(null);
-//          wordService.saveWords(words);
-//
-//        verify(wordRepository, times(1)).addOneWord(eq("Феникс"));
-//        verify(wordRepository, times(1)).addOneWord(eq("Фуфайка"));
-//        verify(wordRepository, times(1)).addOneWord(eq("Фениксятина"));
-//     /*   verify(wordRepository, times(3)).getWordsByChar(eq('Ф'));
-//        verify(wordRepository, times(1)).getWordsByChar(eq('З'));*/
-//
-//    }
 
     @Test
         // JUnit - помечает метод который будет рассцениваться как тест, и при сборке приложения(в нашем случае mvn clean install) метод выполтинся, если будут ошибки - сброка падает

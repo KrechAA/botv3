@@ -10,11 +10,11 @@ public class Indexkey {
     public Indexkey() {
 
     }
+
     public Indexkey(char firstChar, String otherChars) {
         this.firstChar = firstChar;
         this.otherChars = otherChars;
     }
-
 
 
     @Override
@@ -30,13 +30,14 @@ public class Indexkey {
         return Objects.hash(firstChar, otherChars);
     }
 
-    public String getOtherChars(){
+    public String getOtherChars() {
         return otherChars;
     }
 
-    public char getFirstChar(){
+    public char getFirstChar() {
         return firstChar;
     }
+
     public void setFirstChar(char firstChar) {
         this.firstChar = firstChar;
     }
@@ -44,9 +45,6 @@ public class Indexkey {
     public void setOtherChars(String otherChars) {
         this.otherChars = otherChars;
     }
-
-
-
 
 
 }
