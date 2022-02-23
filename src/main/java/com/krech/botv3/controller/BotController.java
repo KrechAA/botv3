@@ -12,24 +12,23 @@ import java.util.List;
 
 
 @RestController
-public class WordObjectController {
+public class BotController {
 
     private final WordService wordService;
 
     @Autowired
-    public WordObjectController(WordService wordService) {
+    public BotController(WordService wordService) {
         this.wordService = wordService;
     }
 
 
-    @GetMapping(value = "/request/{letters}")
-    public ResponseEntity<List<String>> read(@PathVariable(name = "letters") String letters) {
+    @GetMapping(value = "/bot/search")
+    public ResponseEntity<List<String>> read(@RequestParam String letters) {
         final List<String> words = wordService.searchWordsForClient(letters);
 
         return words != null
                 ? new ResponseEntity<>(words, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 
 }

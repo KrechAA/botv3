@@ -16,23 +16,15 @@ import java.util.List;
 @SpringBootApplication
         (scanBasePackages = {"com.krech.botv3.repository", "com.krech.botv3.service", "com.krech.botv3.config"})
 @EnableJpaRepositories(basePackages = "com.krech.botv3.repository")
-public class BotV2 implements CommandLineRunner {
+public class BotV2 {
 
 
-    @Autowired
-    private WordService wordService;
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         SpringApplication.run(BotV2.class);
 
     }
 
-    @Override
-    public void run(String... args) throws Exception {
 
-        List<String> result = wordService.searchWordsForClient("Кмтач");
-        System.out.println(String.join(", ", result));
-    }
 }
 

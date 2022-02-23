@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,14 +19,13 @@ import java.util.stream.Collectors;
 import static java.lang.Character.isUpperCase;
 
 @Service
+@Transactional
 public class WordService {
 
 
     private final IndexRepository indexRepository;
     private final WordRepository wordRepository;
 
-    @Value("${dbconfiguration.repoType}")
-    private String repoType;
 
     @Autowired
     public WordService(IndexRepository indexRepository, WordRepository wordRepository) {
@@ -33,7 +33,7 @@ public class WordService {
         this.wordRepository = wordRepository;
     }
 
-
+    @Deprecated
     public void preparingRepo() throws IOException {
         saveWords(readWordsFromFile());
     }
@@ -69,8 +69,7 @@ public class WordService {
     public List<String> searchWordsForClient(String str) {
         char[] otherChars = new char[str.length() - 1];
         if (!isUpperCase(str.charAt(0))) {
-            System.out.println("Первая буква не большая");
-
+            throw new IllegalArgumentException("Первая буква не большая");
         } else {
             char[] firstLetter = new char[1];
             firstLetter[0] = str.charAt(0);
@@ -95,7 +94,6 @@ public class WordService {
             }
         }
 
-        return null;
     }
 
 
