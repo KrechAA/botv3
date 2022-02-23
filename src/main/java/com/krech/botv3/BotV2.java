@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @SpringBootApplication
-        (scanBasePackages = {"com.krech.botv3.repository", "com.krech.botv3.service", "com.krech.botv3.config"})
+        (scanBasePackages = {"com.krech.botv3.repository", "com.krech.botv3.service", "com.krech.botv3.controller"})
 @EnableJpaRepositories(basePackages = "com.krech.botv3.repository")
 public class BotV2 {
 
