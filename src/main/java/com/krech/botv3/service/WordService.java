@@ -33,11 +33,6 @@ public class WordService {
         this.wordRepository = wordRepository;
     }
 
-    @Deprecated
-    public void preparingRepo() throws IOException {
-        saveWords(readWordsFromFile());
-    }
-
     /**
      * Читаем слова из файла и возвращаем списком
      */
@@ -49,15 +44,22 @@ public class WordService {
     }
 
 
+
+
+    /**
+     * Удаляем одно слово
+     */
+
+
+
+
     /**
      * Получаем список слов и сохраняем в репозиторий
      */
-    public void saveWords(List<String> words) {
-        for (String word : words) {
-            String word1 = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
-            WordObject wordObject = new WordObject(word1, word1.substring(0, 1));
-
+    public void saveManyWord(List<WordObject> listOfWordObject) {
+        for (WordObject wordObject : listOfWordObject) {
             wordRepository.save(wordObject);
+
         }
     }
 
