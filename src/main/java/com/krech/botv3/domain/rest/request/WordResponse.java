@@ -1,11 +1,11 @@
 package com.krech.botv3.domain.rest.request;
 
-public class RestWordObject {
+public class WordResponse {
 
     private String word;
     private String firstLetter;
 
-    public RestWordObject(String word, String firstLetter) {
+    public WordResponse(String word, String firstLetter) {
         this.word = word;
         this.firstLetter = firstLetter;
     }

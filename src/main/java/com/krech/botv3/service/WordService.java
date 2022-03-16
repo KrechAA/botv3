@@ -3,10 +3,12 @@ package com.krech.botv3.service;
 import com.krech.botv3.domain.IndexObject;
 import com.krech.botv3.domain.WordObject;
 import com.krech.botv3.domain.Indexkey;
+import com.krech.botv3.domain.rest.request.WordResponse;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -44,13 +46,12 @@ public class WordService {
     }
 
 
-
-
-    /**
-     * Удаляем одно слово
-     */
-
-
+    public ResponseEntity<?> saveOneWord(WordResponse wordResponse) {
+        WordObject wordObject = new WordObject(wordResponse.getWord(), wordResponse.getFirstLetter());
+        indexRepository.deleteAll();
+        wordRepository.save(wordObject);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 
 
     /**
