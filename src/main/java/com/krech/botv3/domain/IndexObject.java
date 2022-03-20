@@ -14,14 +14,14 @@ public class IndexObject {
 
 
     /**
-     * @index all letters without first
+     *  all letters without first
      */
     @Column(name = "other_letter")
-    String otherLetter;
+    String otherLetters;
 
 
     /**
-     * @firstLetter only first letter
+     *  only first letter
      */
     @Column(name = "first_letter")
     String firstLetter;
@@ -43,12 +43,12 @@ public class IndexObject {
     }
 
 
-    public String getOtherLetter() {
-        return otherLetter;
+    public String getOtherLetters() {
+        return otherLetters;
     }
 
-    public void setOtherLetter(String otherLetter) {
-        this.otherLetter = otherLetter;
+    public void setOtherLetters(String otherLetter) {
+        this.otherLetters = otherLetter;
     }
 
     public String getFirstLetter() {

@@ -48,15 +48,16 @@ class WordServiceTest {
         expected.add("Фениксятина");
         expected.add("Феникс");
 
-        WordObject fenix = new WordObject("Феникс", "Ф");
+        List <IndexObject> listOfIndexObject = new ArrayList<>();
 
+
+
+        WordObject fenix = new WordObject("Феникс", "Ф");
         WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
 
-        NoSuchElementException thrown = Assertions.assertThrows(NoSuchElementException.class, () -> when(wordService.searchIndex(str.toCharArray())).thenReturn(null));
+        when(indexRepository.findByFirstLetter(eq(String.valueOf(str.charAt(0))))).thenReturn(listOfIndexObject);
+        when(wordRepository.findByFirstLetter(eq(String.valueOf(str.charAt(0))))).thenReturn(List.of(fenix, fenixyatina));
 
-        assertNull(thrown.getMessage());
-
-        when(wordService.searchInWords(str.toCharArray())).thenReturn(List.of(fenix, fenixyatina));
 
         List<String> words = wordService.searchWordsForClient(str);
 
@@ -79,12 +80,12 @@ class WordServiceTest {
         setOfWordObjects.add(fenixyatina);
 
         IndexObject fenixIndex = new IndexObject();
-        fenixIndex.setOtherLetter("еник");
+        fenixIndex.setOtherLetters("еник");
         fenixIndex.setFirstLetter("Ф");
         fenixIndex.setWords(setOfWordObjects);
 
 
-        when(indexRepository.findByFirstLetter(String.valueOf(chars[0]))).thenReturn(List.of(fenixIndex));
+        when(indexRepository.findByFirstLetter(eq(String.valueOf(chars[0])))).thenReturn(List.of(fenixIndex));
 
         result = wordService.searchIndex(chars);
 

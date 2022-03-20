@@ -12,7 +12,7 @@ public interface IndexRepository extends CrudRepository<IndexObject, Integer> {
 
     List<IndexObject> findByFirstLetter(String str);
 
-    IndexObject findByFirstLetterAndOtherLetter(String firstLetter, String otherLetters);
+    IndexObject findByFirstLetterAndOtherLetters(String firstLetter, String otherLetters);
 
 
 }

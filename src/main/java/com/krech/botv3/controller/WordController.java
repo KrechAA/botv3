@@ -1,7 +1,8 @@
 package com.krech.botv3.controller;
 
 import com.krech.botv3.domain.WordObject;
-import com.krech.botv3.domain.rest.request.WordResponse;
+import com.krech.botv3.domain.rest.request.WordRequest;
+import com.krech.botv3.domain.rest.response.WordResponse;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.repository.WordRepository;
 import com.krech.botv3.service.WordService;
@@ -15,51 +16,34 @@ public class WordController {
 
 
     private final WordService wordService;
-    private WordRepository wordRepository;
-    private IndexRepository indexRepository;
+
 
     @Autowired
-    public WordController(WordService wordService, WordRepository wordRepository, IndexRepository indexRepository) {
+    public WordController(WordService wordService) {
         this.wordService = wordService;
-        this.wordRepository = wordRepository;
-        this.indexRepository = indexRepository;
     }
 
 
     @PostMapping(value = "/words")
-    public ResponseEntity<?> saveOneWord(@RequestBody WordResponse wordResponse) {
-        if (wordRepository.findByName(wordResponse.getWord()) != null) {
-            throw new IllegalArgumentException("This word already exist");
-        }
-        return wordService.saveOneWord(wordResponse);
+    public ResponseEntity<?> saveOneWord(@RequestBody WordRequest wordRequest) {
+        WordObject wordObject = wordService.saveOneWord(wordRequest);
+        WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getFirstLetter(), wordObject.getName());
+        return new ResponseEntity<>(wordResponse, HttpStatus.CREATED);
     }
 
 
-    @DeleteMapping(value = {"/words"})
+    @DeleteMapping(value = "/words")
     public ResponseEntity<?> delete(@RequestParam String name) {
-
-        if (wordRepository.findByName(name) == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            indexRepository.deleteAll();
-            wordRepository.deleteByName(name);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+        wordService.deleteOneWord(name);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     @PutMapping(value = "/words")
-    public ResponseEntity<?> update(@RequestParam String oldword, @RequestBody WordResponse restNewWordObject) {
-        WordObject oldWordObject = wordRepository.findByName(oldword);
-        if (oldWordObject == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            oldWordObject.setName(restNewWordObject.getWord());
-            oldWordObject.setFirstLetter(restNewWordObject.getFirstLetter());
-            indexRepository.deleteAll();
-            wordRepository.save(oldWordObject);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+    public ResponseEntity<?> update(@RequestParam String oldword, @RequestBody WordRequest wordRequest) {
+       WordObject wordObject = wordService.updateOneWord(oldword, wordRequest);
+       WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getName(), wordObject.getFirstLetter());
+       return new ResponseEntity<>(wordResponse, HttpStatus.OK);
     }
 }
 

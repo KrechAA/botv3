@@ -1,11 +1,12 @@
-package com.krech.botv3.domain.rest.request;
+package com.krech.botv3.domain.rest.response;
 
 public class WordResponse {
-
+    private int id;
     private String word;
     private String firstLetter;
 
-    public WordResponse(String word, String firstLetter) {
+    public WordResponse(int id, String word, String firstLetter) {
+        this.id = id;
         this.word = word;
         this.firstLetter = firstLetter;
     }
@@ -24,5 +25,13 @@ public class WordResponse {
 
     public void setFirstLetter(String firstLetter) {
         this.firstLetter = firstLetter;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -28,7 +28,7 @@ public class BotController {
 
         return words != null
                 ? new ResponseEntity<>(words, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

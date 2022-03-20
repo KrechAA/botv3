@@ -2,8 +2,8 @@ package com.krech.botv3.service;
 
 import com.krech.botv3.domain.IndexObject;
 import com.krech.botv3.domain.WordObject;
-import com.krech.botv3.domain.Indexkey;
-import com.krech.botv3.domain.rest.request.WordResponse;
+import com.krech.botv3.domain.rest.request.WordRequest;
+import com.krech.botv3.domain.rest.response.WordResponse;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static java.lang.Character.isUpperCase;
 
 @Service
-@Transactional
+
 public class WordService {
 
 
@@ -45,18 +45,61 @@ public class WordService {
 
     }
 
-
-    public ResponseEntity<?> saveOneWord(WordResponse wordResponse) {
-        WordObject wordObject = new WordObject(wordResponse.getWord(), wordResponse.getFirstLetter());
+    /**
+     *
+     * @param wordRequest request from client
+     * @return wordObject to controller
+     */
+    @Transactional
+    public WordObject saveOneWord(WordRequest wordRequest) {
+        if (wordRepository.findByName(wordRequest.getWord()) != null) {
+            throw new IllegalArgumentException("This word already exist");
+        }
+        WordObject wordObject = new WordObject(wordRequest.getWord(), wordRequest.getFirstLetter());
         indexRepository.deleteAll();
-        wordRepository.save(wordObject);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return wordRepository.save(wordObject);
+    }
+
+    /**
+     *
+     * @param request request from client to delete one word in repository
+     */
+    @Transactional
+    public void deleteOneWord(String request){
+        if (wordRepository.findByName(request) == null) {
+            throw new IllegalArgumentException("This word not found");
+        } else {
+            indexRepository.deleteAll();
+            wordRepository.deleteByName(request);
+        }
+    }
+
+    /**
+     *
+     * @param oldWord word before update
+     * @param newWord request for update
+     * @return updated wordObject
+     */
+    @Transactional
+    public WordObject updateOneWord (String oldWord, WordRequest newWord){
+
+        WordObject oldWordObject = wordRepository.findByName(oldWord);
+        if (oldWordObject == null) {
+            throw new IllegalArgumentException("Your word is not found");
+        } else {
+            oldWordObject.setName(newWord.getWord());
+            oldWordObject.setFirstLetter(newWord.getFirstLetter());
+            indexRepository.deleteAll();
+            wordRepository.save(oldWordObject);
+            return oldWordObject;
+        }
     }
 
 
     /**
      * Получаем список слов и сохраняем в репозиторий
      */
+    @Transactional
     public void saveManyWord(List<WordObject> listOfWordObject) {
         for (WordObject wordObject : listOfWordObject) {
             wordRepository.save(wordObject);
@@ -117,13 +160,9 @@ public class WordService {
             throw new NoSuchElementException();
         }
         for (IndexObject indexObject : listOfIndexObject) {
+            int lenghtOfOtherCharsPlusOne = indexObject.getOtherLetters().length() + 1;
 
-            Indexkey check = new Indexkey(indexObject.getFirstLetter().charAt(0), indexObject.getOtherLetter());
-
-            int lenghtOfOtherCharsPlusOne = check.getOtherChars().length() + 1;
-
-            if (chars[0] == check.getFirstChar() & chars.length >= lenghtOfOtherCharsPlusOne) {
-
+            if (String.valueOf(chars[0]).equals(indexObject.getFirstLetter()) & chars.length >= lenghtOfOtherCharsPlusOne) {
                 Set<WordObject> setOfWordObject = indexObject.getSetOfWords();
                 for (WordObject wordObject1 : setOfWordObject) {
                     if (wordHasAllChars(wordObject1.getName(), chars)) {
@@ -149,7 +188,7 @@ public class WordService {
 
     /**
      * @param chars список запрошенных букв первая буква списка - первая буква слова
-     * @return
+     * @return list of word objects to parent method
      */
     public List<WordObject> searchInWords(char[] chars) {
         List<WordObject> result = new ArrayList<>();
@@ -168,43 +207,30 @@ public class WordService {
      * @param chars список запрошенных букв первая буква списка - первая буква слова
      * @param words список слов найденных по запрошенным буквам
      */
+    @Transactional
     public void saveIndex(char[] chars, Set<WordObject> words) {
 
-        if (isUpperCase(chars[0])) {
-
-
+        if (!isUpperCase(chars[0])) {
+            throw new IllegalArgumentException("Первая буква не большая");
+        } else {
             char[] charsWithoutFirstLetter = new char[chars.length - 1];
             System.arraycopy(chars, 1, charsWithoutFirstLetter, 0, chars.length - 1);
 
-            IndexObject indexObject = indexRepository.findByFirstLetterAndOtherLetter(String.valueOf(chars[0]), new String(charsWithoutFirstLetter));
+            IndexObject indexObject = indexRepository.findByFirstLetterAndOtherLetters(String.valueOf(chars[0]), new String(charsWithoutFirstLetter));
             if (indexObject == null) {
                 IndexObject dbIndexObjectNew = new IndexObject();
                 dbIndexObjectNew.setFirstLetter(String.valueOf(chars[0]));
-                dbIndexObjectNew.setOtherLetter(String.valueOf(charsWithoutFirstLetter));
-                Set<WordObject> newSetOfWordObject = new HashSet<>(words);
-                dbIndexObjectNew.setWords(newSetOfWordObject);
+                dbIndexObjectNew.setOtherLetters(String.valueOf(charsWithoutFirstLetter));
+                dbIndexObjectNew.setWords(words);
 
                 indexRepository.save(dbIndexObjectNew);
 
             } else {
 
-                Set<WordObject> existingWords = new HashSet<>(indexObject.getSetOfWords());
-
-                Set<WordObject> newSetOfWordObject = new HashSet<>();
-
-                for (WordObject fromNewSet : words) {
-                    if (!existingWords.contains(fromNewSet)) {
-
-                        newSetOfWordObject.add(fromNewSet);
-                    }
-                }
-                indexObject.getSetOfWords().addAll(newSetOfWordObject);
+                indexObject.getSetOfWords().addAll(words);
                 indexRepository.save(indexObject);
             }
 
-
-        } else {
-            System.out.println("первая буква не большая");
         }
 
 

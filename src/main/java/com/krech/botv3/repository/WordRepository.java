@@ -15,17 +15,15 @@ public interface WordRepository extends CrudRepository<WordObject, Integer> {
 
 
     List<WordObject> findByFirstLetter(String c);
+
     WordObject findByName(String str);
 
 
-
-    @Transactional
     @Modifying
     @Query(value = "DELETE FROM sys.words w WHERE w.name=:str", nativeQuery = true)
     void deleteByName(@Param("str") String str);
 
 
-    @Transactional
     @Modifying
     @Query(value = "UPDATE sys.words w SET w.name=:name , w.first_letter=:firstLetter WHERE w.id=:id", nativeQuery = true)
     void update(@Param("name") String name, @Param("firstLetter") String firstLetter, @Param("id") int id);

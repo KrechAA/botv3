@@ -13,18 +13,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-
-
-
     @ExceptionHandler(value = { IllegalArgumentException.class})
     protected ResponseEntity<Object> handleConflict(IllegalArgumentException ex, ServletWebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
 
         return handleExceptionInternal(ex, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
-
-
-
-
 }
 
