@@ -27,7 +27,7 @@ public class WordController {
     @PostMapping(value = "/words")
     public ResponseEntity<?> saveOneWord(@RequestBody WordRequest wordRequest) {
         WordObject wordObject = wordService.saveOneWord(wordRequest);
-        WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getFirstLetter(), wordObject.getName());
+        WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getName(), wordObject.getFirstLetter());
         return new ResponseEntity<>(wordResponse, HttpStatus.CREATED);
     }
 
