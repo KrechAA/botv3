@@ -1,23 +1,33 @@
 package com.krech.botv3.service;
 
-import com.krech.botv3.domain.Indexkey;
+import com.krech.botv3.domain.IndexObject;
+import com.krech.botv3.domain.WordObject;
+import com.krech.botv3.domain.rest.request.WordRequest;
+import com.krech.botv3.domain.rest.response.WordResponse;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Character.isUpperCase;
+
 @Service
+
 public class WordService {
 
 
     private final IndexRepository indexRepository;
     private final WordRepository wordRepository;
+
 
     @Autowired
     public WordService(IndexRepository indexRepository, WordRepository wordRepository) {
@@ -30,46 +40,82 @@ public class WordService {
      */
     public List<String> readWordsFromFile() throws IOException {
         List<String> list = new ArrayList<>();
-        Path path = Path.of("c:\\Users\\krech\\Downloads\\freqrnc2011.txt");
+        Path path = Path.of("c:\\Users\\krecha\\Downloads\\freqrnc2011.txt");
         return list = Files.readAllLines(path);
 
     }
 
     /**
-     * Получаем список слов и сохраняем в репозиторий
+     *
+     * @param wordRequest request from client
+     * @return wordObject to controller
      */
-    public void saveWords(List<String> words) {
-        for (String word : words) {
-            String word1 = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
-            char firstLetter = word1.charAt(0);
-      /*      if (wordRepository.getWordsByChar(firstLetter) == null) {
-                List<String> listInBucket = new ArrayList<>();
-                listInBucket.add(word1);
-                wordRepository.addManyWords(listInBucket);
-                //TODO переписать 38 строку на добавление по одному слову
-            } else {
-
-
-            }*/
-            wordRepository.addOneWord(word1);
+    @Transactional
+    public WordObject saveOneWord(WordRequest wordRequest) {
+        if (wordRepository.findByName(wordRequest.getWord()) != null) {
+            throw new IllegalArgumentException("This word already exist");
         }
-        //save to com.krech.BotV2.repository.WordRepository
-    }
-
-    void loadWords() throws IOException {
-        List<String> words = readWordsFromFile();
-        saveWords(words);
+        WordObject wordObject = new WordObject(wordRequest.getWord(), wordRequest.getFirstLetter());
+        indexRepository.deleteAll();
+        return wordRepository.save(wordObject);
     }
 
     /**
+     *
+     * @param request request from client to delete one word in repository
+     */
+    @Transactional
+    public void deleteOneWord(String request){
+        if (wordRepository.findByName(request) == null) {
+            throw new IllegalArgumentException("This word not found");
+        } else {
+            indexRepository.deleteAll();
+            wordRepository.deleteByName(request);
+        }
+    }
+
+    /**
+     *
+     * @param oldWord word before update
+     * @param newWord request for update
+     * @return updated wordObject
+     */
+    @Transactional
+    public WordObject updateOneWord (String oldWord, WordRequest newWord){
+
+        WordObject oldWordObject = wordRepository.findByName(oldWord);
+        if (oldWordObject == null) {
+            throw new IllegalArgumentException("Your word is not found");
+        } else {
+            oldWordObject.setName(newWord.getWord());
+            oldWordObject.setFirstLetter(newWord.getFirstLetter());
+            indexRepository.deleteAll();
+            wordRepository.save(oldWordObject);
+            return oldWordObject;
+        }
+    }
+
+
+    /**
+     * Получаем список слов и сохраняем в репозиторий
+     */
+    @Transactional
+    public void saveManyWord(List<WordObject> listOfWordObject) {
+        for (WordObject wordObject : listOfWordObject) {
+            wordRepository.save(wordObject);
+
+        }
+    }
+
+
+    /**
      * @param str список запрошенных букв первая буква списка - первая буква слова
-     * @return
+     * @return result
      */
     public List<String> searchWordsForClient(String str) {
         char[] otherChars = new char[str.length() - 1];
-        if (isUpperCase(str.charAt(0)) == false) {
-            System.out.println("Первая буква не большая");
-            //дописать возвращение к началу. добавить исключение? добавить сканнер и цикл?
+        if (!isUpperCase(str.charAt(0))) {
+            throw new IllegalArgumentException("Первая буква не большая");
         } else {
             char[] firstLetter = new char[1];
             firstLetter[0] = str.charAt(0);
@@ -83,23 +129,17 @@ public class WordService {
 
             try {
                 return searchIndex(charsSort);
-            } catch (NoSuchElementException e){
+            } catch (NoSuchElementException e) {
                 System.out.println("нет подходящего индекса");
 
-                Set<String> setOfWordsInDictionary = new HashSet<>(searchInWords(chars));
+                Set<WordObject> setOfWordsInDictionary = new HashSet<>(searchInWords(chars));
                 saveIndex(chars, setOfWordsInDictionary);
-                return new ArrayList<>(setOfWordsInDictionary);
+
+
+                return setOfWordsInDictionary.stream().map(WordObject::getName).collect(Collectors.toList());
             }
         }
-//TODO собрать здесь всю логику бота, используя уже написанные  методы + дописать недостающую логику.
 
-
-//      1)ищем наиболее подходящий индекс
-//              1а) Если нет ищем сразу по словам
-//      2)ищем слово в индексе по буквам из запроса
-//      3)строим индекс по буквам из запроса
-//      4) возвращаем список слов
-        return null;
     }
 
 
@@ -108,81 +148,89 @@ public class WordService {
      * если индекс не найдет, то кидаем NoSuchElementException
      *
      * @param chars список запрошенных букв первая буква списка - первая буква слова
-     * @return
+     * @return result
      */
     public List<String> searchIndex(char[] chars) throws NoSuchElementException {
-        List <String> result = null;
-        char[] otherChars = new char[chars.length - 1];
+        List<String> result = null;
+
         int sizeOfWordList = Integer.MAX_VALUE;
 
-        System.arraycopy(chars, 1, otherChars, 0, chars.length - 1);
+        List<IndexObject> listOfIndexObject = indexRepository.findByFirstLetter(String.valueOf(chars[0]));
+        if (listOfIndexObject == null) {
+            throw new NoSuchElementException();
+        }
+        for (IndexObject indexObject : listOfIndexObject) {
+            int lenghtOfOtherCharsPlusOne = indexObject.getOtherLetters().length() + 1;
 
-
-            for (Map.Entry<Indexkey, Set<String>> entry : indexRepository.getAll().entrySet()) {
-
-                Indexkey check = entry.getKey();
-                int lenghtOfOtherCharsPlusOne = check.getOtherChars().length() +1;
-
-                if (chars[0] == check.getFirstChar() & chars.length >= lenghtOfOtherCharsPlusOne) {
-                    if (wordHasAllChars(check.getOtherChars(), otherChars)) {
-                        if (entry.getValue().size() < sizeOfWordList) {
-                            sizeOfWordList = entry.getValue().size();
-                            result = new ArrayList<>(entry.getValue());
-
+            if (String.valueOf(chars[0]).equals(indexObject.getFirstLetter()) & chars.length >= lenghtOfOtherCharsPlusOne) {
+                Set<WordObject> setOfWordObject = indexObject.getSetOfWords();
+                for (WordObject wordObject1 : setOfWordObject) {
+                    if (wordHasAllChars(wordObject1.getName(), chars)) {
+                        if (setOfWordObject.size() < sizeOfWordList) {
+                            sizeOfWordList = setOfWordObject.size();
+                            result = new ArrayList<>();
+                            for (WordObject wordObject : setOfWordObject) {
+                                result.add(wordObject.getName());
+                            }
                         }
-                        //TODO строки 82-84 переписать на обращения к entry, а не к репозиторию
-                        //TODO кидать эксепшен, если не нашли ни одного индекса.
-                        //TODO сдеать юниттест
+
                     }
                 }
-            }
-            if (result == null) {
-                throw new NoSuchElementException();
-            }
 
-        // если нет подходящего индекса кидаем new NoSuchElementException
+            }
+        }
+        if (result == null) {
+            throw new NoSuchElementException();
+        }
+
         return result;
     }
 
     /**
      * @param chars список запрошенных букв первая буква списка - первая буква слова
-     * @return
+     * @return list of word objects to parent method
      */
-    public List<String> searchInWords(char[] chars) {
-        List<String> result = new ArrayList<>();
+    public List<WordObject> searchInWords(char[] chars) {
+        List<WordObject> result = new ArrayList<>();
 
-        List<String> listOfWordsInDictionary = wordRepository.getWordsByChar(chars[0]); //TODO вынуть все слова на первую букву из WordRepo и искать слова. Индексы игнорируем.
-        for (String word : listOfWordsInDictionary) {
+        List<WordObject> listOfWordsInDictionary = wordRepository.findByFirstLetter(String.valueOf(chars[0]));
+        for (WordObject wordObject : listOfWordsInDictionary) {
+            String word = wordObject.getName();
             if (wordHasAllChars(word, chars)) {
-                result.add(word);
+                result.add(wordObject);
             }
         }
-
         return result;
-        //поиск напора слов по запрощенным буквам
-        //вынуть все слова из WordRepo
     }
 
     /**
      * @param chars список запрошенных букв первая буква списка - первая буква слова
      * @param words список слов найденных по запрошенным буквам
      */
-    void saveIndex(char[] chars, Set<String> words) {
+    @Transactional
+    public void saveIndex(char[] chars, Set<WordObject> words) {
 
-        if (isUpperCase(chars[0])) {
-            Indexkey indexkey = new Indexkey();
-            indexkey.setFirstChar(chars[0]);
+        if (!isUpperCase(chars[0])) {
+            throw new IllegalArgumentException("Первая буква не большая");
+        } else {
             char[] charsWithoutFirstLetter = new char[chars.length - 1];
             System.arraycopy(chars, 1, charsWithoutFirstLetter, 0, chars.length - 1);
-            indexkey.setOtherChars(new String(charsWithoutFirstLetter));
-            if (indexRepository.getWords(indexkey).size() == 0) { //TODO заменить getAll на get. ищм в репо индекс по индекскею. пустые индексы не сохраняем
-                indexRepository.addNewIndexAndWords(indexkey, words);
+
+            IndexObject indexObject = indexRepository.findByFirstLetterAndOtherLetters(String.valueOf(chars[0]), new String(charsWithoutFirstLetter));
+            if (indexObject == null) {
+                IndexObject dbIndexObjectNew = new IndexObject();
+                dbIndexObjectNew.setFirstLetter(String.valueOf(chars[0]));
+                dbIndexObjectNew.setOtherLetters(String.valueOf(charsWithoutFirstLetter));
+                dbIndexObjectNew.setWords(words);
+
+                indexRepository.save(dbIndexObjectNew);
+
             } else {
-                indexRepository.getWords(indexkey).addAll(words);//TODO заменить addAll на add в цикле.
+
+                indexObject.getSetOfWords().addAll(words);
+                indexRepository.save(indexObject);
             }
-        } else {
-            System.out.println("первая буква не большая");
-            //вывести сообщение о некорректном вводе запроса
+
         }
 
 
@@ -210,39 +258,5 @@ public class WordService {
 
         return chars.length == count;
 
-        //проверка слова на содержание всех чаров
     }
-
 }
-
-
-/* (Арбуз)
-Абру
-ОБЩИЙ АЛГОРИТМ ПОИСКА:
-А - берем все слова на А (WordRepo)
-бру - ищем все слова, которые содержат б, р, у. Используем метод wordHasAllChars
-
-Индекс - это сам запрос без первой буквы. Строим индекс из всех букв запроса первая буква+отсортированное все остальное.
-
-Абрзу
-Когда приходят со вторым запросом, то ищем, есть ли такой индекс или наиболее подходящий (по количеству совпадающих букв. Меньшие
-индексы отметаются). И ищем аналогично слова по наличию всех букв в слове (Не по списку слов из WordRepo, а по списку из IndexRepo)
-После обработки каждого запроса результаты сохранять в IndexRepo. Из всех букв запроса строится новый индекс.
-
-ПОИСК ЛУЧШЕГО ИНДЕКСА:
-Абзру
-
-Аб
-Абру
-Абкру
-В индекс входят только те буквы, которые есть в запросе в нужном количестве. Используем метод wordHasAllChars
-Из нескольких индеков, которые удовлетворяют первому условию, выбирается тот, к которому привязано наименьшее количество слов.
-Сравниваем текущий индекс и следующий. Если следующий лучше текущего, то делаем его текущим. Повторять до конца списка индексов.
-Итерируемся по всем индексам -> проверяем с помощью wordHasAllChars -> храним только лучший по количеству слов индекс -> если текущий
-индекс лучше сохраненного лучшего индекса, то сохраняем вместо лучшего индекса текущий.
-
-
-БЕЗОПАСНОСТЬ:
-хранилища индексов и слов сделать private. прописать соответствующие методы в классах IndexRepo и WordRepo.
-
- */
