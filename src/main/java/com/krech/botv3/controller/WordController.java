@@ -25,7 +25,7 @@ public class WordController {
 
 
     @PostMapping(value = "/words")
-    public ResponseEntity<?> saveOneWord(@RequestBody WordRequest wordRequest) {
+    public ResponseEntity<WordResponse> saveOneWord(@RequestBody WordRequest wordRequest) {
         WordObject wordObject = wordService.saveOneWord(wordRequest);
         WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getName(), wordObject.getFirstLetter());
         return new ResponseEntity<>(wordResponse, HttpStatus.CREATED);
@@ -33,14 +33,14 @@ public class WordController {
 
 
     @DeleteMapping(value = "/words")
-    public ResponseEntity<?> delete(@RequestParam String name) {
+    public ResponseEntity<WordResponse> delete(@RequestParam String name) {
         wordService.deleteOneWord(name);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     @PutMapping(value = "/words")
-    public ResponseEntity<?> update(@RequestParam String oldword, @RequestBody WordRequest wordRequest) {
+    public ResponseEntity<WordResponse> update(@RequestParam String oldword, @RequestBody WordRequest wordRequest) {
        WordObject wordObject = wordService.updateOneWord(oldword, wordRequest);
        WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getName(), wordObject.getFirstLetter());
        return new ResponseEntity<>(wordResponse, HttpStatus.OK);
