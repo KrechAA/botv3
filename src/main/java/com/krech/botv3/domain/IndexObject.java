@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "indexes")
+@Table(name = "indexes_aka_queries")
 public class IndexObject {
 
 
