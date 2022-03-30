@@ -16,6 +16,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,21 +39,16 @@ public class FileService {
 
 
     public void readWordsFromFile(MultipartFile multipartFile) throws IOException {
-        List<String> list;
+        List<String> finalList = new ArrayList<>();
 
         InputStream initialStream = multipartFile.getInputStream();
-        byte[] buffer = new byte[initialStream.available()];
-        initialStream.read(buffer);
+        InputStreamReader isr = new InputStreamReader(initialStream, StandardCharsets.UTF_8);
+        BufferedReader br = new BufferedReader(isr);
 
-        File targetFile = new File("src/main/resources/targetFile.tmp");
-        try (OutputStream outStream = new FileOutputStream(targetFile)) {
-            outStream.write(buffer);
-        }
-        Path path = Path.of("src/main/resources/targetFile.tmp");
-        list = Files.readAllLines(path);
+        br.lines().forEach(line -> finalList.add(line));
 
         List<WordObject> listOfWO = new ArrayList<>();
-        for (String str : list) {
+        for (String str : finalList) {
             String fL = String.valueOf(str.charAt(0));
             String oL = str.substring(1);
             String newFl = fL.toUpperCase();

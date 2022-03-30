@@ -3,7 +3,7 @@ package com.krech.botv3.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "words_in_dictionary")
+@Table(name = "words")
 public class WordObject {
 
     @Id

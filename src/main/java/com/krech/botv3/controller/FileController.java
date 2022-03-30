@@ -35,7 +35,7 @@ public class FileController {
             return new ResponseEntity<>("file is empty", HttpStatus.BAD_REQUEST);
         }
         fileService.readWordsFromFile(multipartFile);
-        return new ResponseEntity<>("that's ok", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 
