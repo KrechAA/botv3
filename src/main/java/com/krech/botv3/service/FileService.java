@@ -39,24 +39,20 @@ public class FileService {
 
 
     public void readWordsFromFile(MultipartFile multipartFile) throws IOException {
-        List<String> finalList = new ArrayList<>();
-
         InputStream initialStream = multipartFile.getInputStream();
         InputStreamReader isr = new InputStreamReader(initialStream, StandardCharsets.UTF_8);
         BufferedReader br = new BufferedReader(isr);
-
-        br.lines().forEach(line -> finalList.add(line));
-
         List<WordObject> listOfWO = new ArrayList<>();
-        for (String str : finalList) {
-            String fL = String.valueOf(str.charAt(0));
-            String oL = str.substring(1);
-            String newFl = fL.toUpperCase();
-            String newStr = newFl + oL;
-
-            WordObject w = new WordObject(newStr, newFl);
-            listOfWO.add(w);
-        }
+        br.lines().forEach(line -> listOfWO.add(wordObjectCreator(line)));
         wordRepository.saveAll(listOfWO);
+    }
+
+    public WordObject wordObjectCreator(String str) {
+        String fL = String.valueOf(str.charAt(0));
+        String oL = str.substring(1);
+        String newFl = fL.toUpperCase();
+        String newStr = newFl + oL;
+
+        return new WordObject(newStr, newFl);
     }
 }
