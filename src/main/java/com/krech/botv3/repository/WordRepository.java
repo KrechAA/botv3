@@ -29,4 +29,5 @@ public interface WordRepository extends CrudRepository<WordObject, Integer> {
     void update(@Param("name") String name, @Param("firstLetter") String firstLetter, @Param("id") int id);
 
 
+
 }
