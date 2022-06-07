@@ -3,12 +3,9 @@ package com.krech.botv3.service;
 import com.krech.botv3.domain.IndexObject;
 import com.krech.botv3.domain.WordObject;
 import com.krech.botv3.domain.rest.request.WordRequest;
-import com.krech.botv3.domain.rest.response.WordResponse;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.repository.WordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,7 +18,6 @@ import java.util.stream.Collectors;
 import static java.lang.Character.isUpperCase;
 
 @Service
-
 public class WordService {
 
 
@@ -163,7 +159,7 @@ public class WordService {
             int lenghtOfOtherCharsPlusOne = indexObject.getOtherLetters().length() + 1;
 
             if (String.valueOf(chars[0]).equals(indexObject.getFirstLetter()) & chars.length >= lenghtOfOtherCharsPlusOne) {
-                Set<WordObject> setOfWordObject = indexObject.getSetOfWords();
+                Set<WordObject> setOfWordObject = indexObject.getWords();
                 for (WordObject wordObject1 : setOfWordObject) {
                     if (wordHasAllChars(wordObject1.getName(), chars)) {
                         if (setOfWordObject.size() < sizeOfWordList) {
@@ -227,7 +223,7 @@ public class WordService {
 
             } else {
 
-                indexObject.getSetOfWords().addAll(words);
+                indexObject.getWords().addAll(words);
                 indexRepository.save(indexObject);
             }
 

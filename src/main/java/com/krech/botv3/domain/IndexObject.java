@@ -1,8 +1,13 @@
 package com.krech.botv3.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "indexes")
 public class IndexObject {
@@ -28,42 +33,9 @@ public class IndexObject {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-
             name = "idwords_idindex",
             joinColumns = @JoinColumn(name = "id_index"),
             inverseJoinColumns = @JoinColumn(name = "id_word"))
     Set<WordObject> words;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-
-    public String getOtherLetters() {
-        return otherLetters;
-    }
-
-    public void setOtherLetters(String otherLetter) {
-        this.otherLetters = otherLetter;
-    }
-
-    public String getFirstLetter() {
-        return firstLetter;
-    }
-
-    public void setFirstLetter(String firstLetter) {
-        this.firstLetter = firstLetter;
-    }
-
-    public Set<WordObject> getSetOfWords() {
-        return words;
-    }
-
-    public void setWords(Set<WordObject> words) {
-        this.words = words;
-    }
 }

@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class WordController {
 
-
     private final WordService wordService;
-
 
     @Autowired
     public WordController(WordService wordService) {
@@ -24,7 +22,7 @@ public class WordController {
     }
 
 
-    @PostMapping(value = "/words")
+    @PostMapping(value = "/words/add")
     public ResponseEntity<WordResponse> saveOneWord(@RequestBody WordRequest wordRequest) {
         WordObject wordObject = wordService.saveOneWord(wordRequest);
         WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getName(), wordObject.getFirstLetter());
@@ -32,14 +30,14 @@ public class WordController {
     }
 
 
-    @DeleteMapping(value = "/words")
+    @DeleteMapping(value = "/words/delete")
     public ResponseEntity<WordResponse> delete(@RequestParam String name) {
         wordService.deleteOneWord(name);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @PutMapping(value = "/words")
+    @PutMapping(value = "/words/update")
     public ResponseEntity<WordResponse> update(@RequestParam String oldword, @RequestBody WordRequest wordRequest) {
        WordObject wordObject = wordService.updateOneWord(oldword, wordRequest);
        WordResponse wordResponse = new WordResponse(wordObject.getId(), wordObject.getName(), wordObject.getFirstLetter());
