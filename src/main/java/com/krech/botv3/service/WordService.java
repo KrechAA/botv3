@@ -31,15 +31,7 @@ public class WordService {
         this.wordRepository = wordRepository;
     }
 
-    /**
-     * Читаем слова из файла и возвращаем списком
-     */
-    public List<String> readWordsFromFile() throws IOException {
-        List<String> list = new ArrayList<>();
-        Path path = Path.of("c:\\Users\\krecha\\Downloads\\freqrnc2011.txt");
-        return list = Files.readAllLines(path);
 
-    }
 
     /**
      *
