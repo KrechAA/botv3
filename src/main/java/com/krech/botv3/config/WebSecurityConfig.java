@@ -21,9 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-    private static final String USERS_API = "/restapi/v1/users/**";
-    private static final String AUTH_API = "/restapi/v1/auth/**";
-    private static final String WORDS_API = "/restapi/v1/run-log/**";
+    private static final String USERS_API = "/users/**";
+    private static final String AUTH_API = "/auth/**";
+    private static final String WORDS_API = "/words/**";
 
     private final JwtFilter jwtFilter;
 
