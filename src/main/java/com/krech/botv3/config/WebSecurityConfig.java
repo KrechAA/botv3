@@ -24,6 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String USERS_API = "/users/**";
     private static final String AUTH_API = "/auth/**";
     private static final String WORDS_API = "/words/**";
+    private static final String FILE_API = "/files/**";
 
     private final JwtFilter jwtFilter;
 
@@ -35,14 +36,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
                 .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(AUTH_API).permitAll()
                 .antMatchers(USERS_API).hasAnyRole(Role.ADMIN.toString())
-               .antMatchers(WORDS_API).hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
+                .antMatchers(WORDS_API).hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
+                .antMatchers(FILE_API).hasAnyRole(Role.ADMIN.toString())
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }

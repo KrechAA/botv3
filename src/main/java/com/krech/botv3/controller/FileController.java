@@ -29,7 +29,7 @@ public class FileController {
     }
 
 
-    @PostMapping(value = "/fileUpload")
+    @PostMapping(value = "/files/fileUpload")
     public ResponseEntity<?> handleFileUpload(@RequestParam ("file") MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()) {
             return new ResponseEntity<>("file is empty", HttpStatus.BAD_REQUEST);
