@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(AUTH_API).permitAll()
                 .antMatchers(USERS_API).hasAnyRole(Role.ADMIN.toString())
-               // .antMatchers(WORDS_API).hasAnyRole(Role.ADMIN.toString(), Role.USER.toString()) //TODO поменять доступ к вордам
+               .antMatchers(WORDS_API).hasAnyRole(Role.ADMIN.toString(), Role.USER.toString())
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
