@@ -7,10 +7,11 @@ import lombok.ToString;
 
 
 
-@AllArgsConstructor
+
 @ToString
 @Getter
 @Setter
+@AllArgsConstructor
 public class AuthenticationResponse {
 
     private String jwtToken;

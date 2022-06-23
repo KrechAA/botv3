@@ -15,11 +15,13 @@ import java.util.Date;
 @Service
 public class JwtService {
 
+    public static final int JWT_TOKEN_EXPIRATION_DAYS = 15;
+
     @Value("$(jwt.secret)")
     private String jwtSecret;
 
     public String generateToken(String login) {
-        Date date = Date.from(LocalDate.now().plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date date = Date.from(LocalDate.now().plusDays(JWT_TOKEN_EXPIRATION_DAYS).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .setSubject(login)
                 .setExpiration(date)

@@ -1,8 +1,12 @@
 package com.krech.botv3.domain.rest.request;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class CreateUserBaseRequest {
 
     private String login;
@@ -13,15 +17,6 @@ public abstract class CreateUserBaseRequest {
 
     private String surname;
 
-    public CreateUserBaseRequest() {
-    }
-
-    public CreateUserBaseRequest(String login, String password, String name, String surname) {
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.surname = surname;
-    }
 
     public abstract String getRole();
 }

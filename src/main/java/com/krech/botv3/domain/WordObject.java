@@ -1,12 +1,16 @@
 package com.krech.botv3.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "words")
 public class WordObject {
@@ -22,12 +26,5 @@ public class WordObject {
     String firstLetter;
 
 
-    public WordObject() {
-    }
-
-    public WordObject(String name, String firstLetter) {
-        this.name = name;
-        this.firstLetter = firstLetter;
-    }
 
 }

@@ -1,8 +1,11 @@
 package com.krech.botv3.domain.rest.request;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateUserRequest {
 
     private String password;
@@ -13,13 +16,5 @@ public class UpdateUserRequest {
 
     private String role;
 
-    public UpdateUserRequest() {
-    }
 
-    public UpdateUserRequest(String password, String name, String surname, String role) {
-        this.password = password;
-        this.name = name;
-        this.surname = surname;
-        this.role = role;
-    }
 }

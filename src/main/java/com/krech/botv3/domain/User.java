@@ -12,6 +12,8 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -37,17 +39,6 @@ public class User {
     private int role;
 
 
-    public User() {
-    }
-
-    public User(int id, String login, String password, String name, String surname, int role) {
-        this.id = id;
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.surname = surname;
-        this.role = role;
-    }
 
     @JsonProperty("role")
 

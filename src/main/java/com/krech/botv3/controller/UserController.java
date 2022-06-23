@@ -31,28 +31,28 @@ public class UserController {
     }
 
 
-    @GetMapping(value = "/users/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
 
-    @PostMapping(value = "/users/new", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> createUser( @RequestBody CreateUserRequest createUserRequest) {
         User createdUser = userService.create(createUserRequest);
         return new ResponseEntity<>(createdUser, HttpStatus.OK);
     }
 
 
-    @PutMapping(value = "users/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> updateUser(@PathVariable("userId") Long userId,@RequestBody UpdateUserRequest updateUserRequest) {
         User updatedUser = userService.updateUser(userId, updateUserRequest);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
 
-    @DeleteMapping(value = "users/delete/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteById(userId);
         return new ResponseEntity<>(HttpStatus.OK);

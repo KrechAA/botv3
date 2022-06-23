@@ -1,9 +1,12 @@
 package com.krech.botv3.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Getter
+@AllArgsConstructor
 public enum Role {
     USER(1, "user"),
     ADMIN(2, "admin");
@@ -11,10 +14,7 @@ public enum Role {
     private final int id;
     private final String name;
 
-    Role(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+
 
     public static Role getById(int id) {
         for (Role role : Role.values()) {
