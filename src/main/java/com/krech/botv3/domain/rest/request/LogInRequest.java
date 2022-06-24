@@ -6,10 +6,11 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WordRequest {
+public class LogInRequest {
 
-    private String word;
-    private String firstLetter;
+    private String login;
+
+    private String password;
 
 
 }

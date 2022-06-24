@@ -22,7 +22,7 @@ public class BotController {
     }
 
 
-    @GetMapping(value = "/bot/search")
+    @GetMapping(value = "/bot")
     public ResponseEntity<List<String>> read(@RequestParam String letters) {
         final List<String> words = wordService.searchWordsForClient(letters);
 
