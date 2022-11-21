@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,9 +29,7 @@ public class WordService {
     }
 
 
-
     /**
-     *
      * @param wordRequest request from client
      * @return wordObject to controller
      */
@@ -49,11 +44,10 @@ public class WordService {
     }
 
     /**
-     *
      * @param request request from client to delete one word in repository
      */
     @Transactional
-    public void deleteOneWord(String request){
+    public void deleteOneWord(String request) {
         if (wordRepository.findByName(request) == null) {
             throw new IllegalArgumentException("This word not found");
         } else {
@@ -63,13 +57,12 @@ public class WordService {
     }
 
     /**
-     *
      * @param oldWord word before update
      * @param newWord request for update
      * @return updated wordObject
      */
     @Transactional
-    public WordObject updateOneWord (String oldWord, WordRequest newWord){
+    public WordObject updateOneWord(String oldWord, WordRequest newWord) {
 
         WordObject oldWordObject = wordRepository.findByName(oldWord);
         if (oldWordObject == null) {
@@ -224,7 +217,7 @@ public class WordService {
 
     }
 
-    private boolean wordHasAllChars(String word, char[] chars) {
+    public boolean wordHasAllChars(String word, char[] chars) {
         int count = 0;
         char[] charsForOperations = new char[chars.length];
         System.arraycopy(chars, 0, charsForOperations, 0, chars.length);

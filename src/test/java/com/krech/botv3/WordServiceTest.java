@@ -2,6 +2,7 @@ package com.krech.botv3;
 
 import com.krech.botv3.domain.IndexObject;
 import com.krech.botv3.domain.WordObject;
+import com.krech.botv3.domain.rest.request.WordRequest;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.service.WordService;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.krech.botv3.repository.WordRepository;
@@ -21,12 +23,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
-@ExtendWith(MockitoExtension.class) // ExtendWith - Juint; MockitoExtension - mockito. эта строка говорит junit'у, что нужно подключтить мокито к тестам, и тогда у нас заработают аннотации @Mock @InjectMocks
+@ExtendWith(MockitoExtension.class)
 class WordServiceTest {
 
-    @Mock // Mockito поля, помеченные этой аннотацией инициализируются с помощью Mockito. Изначально это пустые объекты болванки, которые ничего не делают, все методы возвращают null или пустые коллекции(стоит проверить)
+    @Mock
     WordRepository wordRepository;
-
 
     @Mock
     IndexRepository indexRepository;
@@ -35,7 +36,7 @@ class WordServiceTest {
     WordService wordService;
 
 
-    @BeforeEach //Junit - метод, в еоторый пожно поместитть некоторый пресетап для каждого теста в классе
+    @BeforeEach
     public void init() {
         wordService = new WordService(indexRepository, wordRepository);
     }
@@ -60,6 +61,12 @@ class WordServiceTest {
         assertTrue(expected.containsAll(words));
     }
 
+    @Test
+    void searchWordsForClientTestOfException() {
+        String str = "феникс";
+
+        assertThrows(IllegalArgumentException.class, () -> wordService.searchWordsForClient(str));
+    }
 
     @Test
     void searchIndexTest() {
@@ -79,9 +86,12 @@ class WordServiceTest {
         when(indexRepository.findByFirstLetter(eq(String.valueOf(chars[0])))).thenReturn(List.of(fenixIndex));
 
         List<String> result = wordService.searchIndex(chars);
+        Collections.sort(result);
 
-        assertEquals(result, List.of("Феникс", "Фениксятина"));
-
+        assertEquals(List.of("Феникс", "Фениксятина"), result);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(indexRepository, times(1)).findByFirstLetter(captor.capture());
+        assertEquals("Ф", captor.getValue());
     }
 
 
@@ -96,25 +106,168 @@ class WordServiceTest {
 
 
     @Test
-        // JUnit - помечает метод который будет рассцениваться как тест, и при сборке приложения(в нашем случае mvn clean install) метод выполтинся, если будут ошибки - сброка падает
     void searchInWordsTest() {
         char[] chars2 = new char[]{'Ф', 'е', 'н', 'и', 'к', 'с'};
         WordObject fenix = new WordObject("Феникс", "Ф");
         WordObject fufaika = new WordObject("Фуфайка", "Ф");
         WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
 
-
-        // Перед тем как вызвать тестируемый метод, нужно задать поведение тем методам моков, которые участвуют в логике тестируемого метода.
         when(wordRepository.findByFirstLetter(eq("Ф"))).thenReturn(List.of(fenix, fufaika, fenixyatina));
-
 
         List<WordObject> expected = wordService.searchInWords(chars2);
 
-
         assertEquals(expected, List.of(fenix, fenixyatina));
-// Иногда бывает так что критерием успешного выполнения теста являются
-// не возвращаемые тестируемым методом данные, а факт того, что метод мока был вызван
-// в ходе выполнения тестируемого метода. Для проверки этого можно использовать verify
+        verify(wordRepository, times(1)).findByFirstLetter(eq("Ф"));
+    }
 
+    @Test
+    void wordHasAllCharsTest() {
+        String word = "Феникс";
+        char[] charsTrue = new char[]{'Ф', 'е', 'и', 'к'};
+        char[] charsFalse = new char[]{'П', 'е', 'и', 'к'};
+
+        //if second argument longer then first
+        char[] charsFalse2 = new char[]{'Ф', 'е', 'и', 'к', 'е', 'и', 'к'};
+
+        boolean resultTrue = wordService.wordHasAllChars(word, charsTrue);
+        boolean resultFalse = wordService.wordHasAllChars(word, charsFalse);
+        boolean resultFalse2 = wordService.wordHasAllChars(word, charsFalse2);
+
+        assertTrue(resultTrue);
+        assertFalse(resultFalse);
+        assertFalse(resultFalse2);
+    }
+
+    @Test
+    void saveOneWordTest() {
+        WordRequest wordRequest = new WordRequest("Феникс", "Ф");
+        WordObject wordObject = new WordObject(wordRequest.getWord(), wordRequest.getFirstLetter());
+        WordObject wordObjectExpected = new WordObject(wordRequest.getWord(), wordRequest.getFirstLetter());
+
+        when(wordRepository.findByName(eq(wordRequest.getWord()))).thenReturn(null);
+        when(wordRepository.save(any())).thenReturn(wordObject);
+
+        WordObject result = wordService.saveOneWord(wordRequest);
+
+        assertEquals(wordObjectExpected.getName(), result.getName());
+        assertEquals(wordObjectExpected.getFirstLetter(), result.getFirstLetter());
+        verify(indexRepository, times(1)).deleteAll();
+
+        when(wordRepository.findByName(wordRequest.getWord())).thenReturn(wordObject);
+        assertThrows(IllegalArgumentException.class, () -> wordService.saveOneWord(wordRequest));
+    }
+
+
+    @Test
+    void saveIndexTest() {
+
+        char[] chars = new char[]{'Ф', 'е', 'и', 'к'};
+        Set<WordObject> words = new HashSet<>();
+        Set<WordObject> wordsInIndexObject = new HashSet<>();
+        WordObject fenix = new WordObject("Феникс", "Ф");
+        WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
+        words.add(fenix);
+        words.add(fenixyatina);
+        IndexObject indexObject = new IndexObject();
+        indexObject.setFirstLetter("Ф");
+        indexObject.setOtherLetters("еик");
+        indexObject.setWords(wordsInIndexObject);
+
+        when(indexRepository.findByFirstLetterAndOtherLetters("Ф", "еик")).thenReturn(indexObject);
+
+        wordService.saveIndex(chars, words);
+
+        verify(indexRepository, times(1)).save(any());
+    }
+
+    @Test
+    void saveIndexTestWhenIndexObjectEqNull() {
+        char[] chars = new char[]{'Ф', 'е', 'и', 'к'};
+        Set<WordObject> words = new HashSet<>();
+        Set<WordObject> wordsInIndexObject = new HashSet<>();
+        WordObject fenix = new WordObject("Феникс", "Ф");
+        WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
+        words.add(fenix);
+        words.add(fenixyatina);
+        IndexObject indexObject = new IndexObject();
+        indexObject.setFirstLetter("Ф");
+        indexObject.setOtherLetters("еик");
+        indexObject.setWords(wordsInIndexObject);
+
+        when(indexRepository.findByFirstLetterAndOtherLetters("Ф", "еик")).thenReturn(null);
+
+        wordService.saveIndex(chars, words);
+
+        verify(indexRepository, times(1)).save(any());
+    }
+
+    @Test
+    void saveIndexTestOfException() {
+        char[] chars = new char[]{'ф', 'е', 'и', 'к'};
+        Set<WordObject> words = new HashSet<>();
+
+        assertThrows(IllegalArgumentException.class, () -> wordService.saveIndex(chars, words));
+    }
+
+    @Test
+    void saveManyWord() {
+        List<WordObject> listOfWordObject = new ArrayList<>();
+        WordObject fenix = new WordObject("Феникс", "Ф");
+        WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
+        listOfWordObject.add(fenix);
+        listOfWordObject.add(fenixyatina);
+
+        wordService.saveManyWord(listOfWordObject);
+
+        verify(wordRepository, times(2)).save(any());
+    }
+
+    @Test
+    void updateOneWord() {
+        WordRequest wordRequest = new WordRequest("Феникс", "Ф");
+        String oldWord = "Фенекс";
+        WordObject oldWordObject = new WordObject("Фенекс","Ф");
+
+        when(wordRepository.findByName(oldWord)).thenReturn(oldWordObject);
+
+        wordService.updateOneWord(oldWord, wordRequest);
+
+        verify(indexRepository, times(1)).deleteAll();
+        verify(wordRepository, times(1)).save(oldWordObject);
+        assertEquals(wordRequest.getWord(), oldWordObject.getName());
+        assertEquals(wordRequest.getFirstLetter(), oldWordObject.getFirstLetter());
+    }
+
+    @Test
+    void updateOneWordOfException() {
+        WordRequest wordRequest = new WordRequest("Феникс", "Ф");
+        String oldWord = "Фенекс";
+        WordObject oldWordObject = new WordObject("Фенекс","Ф");
+
+        when(wordRepository.findByName(oldWord)).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> wordService.updateOneWord(oldWord, wordRequest));
+    }
+
+    @Test
+    void deleteOneWordOfException() {
+        String request = "Феникс";
+
+        when(wordRepository.findByName(request)).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> wordService.deleteOneWord(request));
+    }
+
+    @Test
+    void deleteOneWord () {
+        String request = "Феникс";
+        WordObject wordObject = new WordObject("Феникс","Ф");
+
+        when(wordRepository.findByName(request)).thenReturn(wordObject);
+
+        wordService.deleteOneWord(request);
+
+        verify(indexRepository, times(1)).deleteAll();
+        verify(wordRepository, times(1)).deleteByName(request);
     }
 }

@@ -10,11 +10,14 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "words")
 public class WordObject {
 
+    public WordObject(String name, String firstLetter) {
+        this.name = name;
+        this.firstLetter = firstLetter;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -24,7 +27,6 @@ public class WordObject {
 
     @Column(name = "first_letter")
     String firstLetter;
-
 
 
 }
