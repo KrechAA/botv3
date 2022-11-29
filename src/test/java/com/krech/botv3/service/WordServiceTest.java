@@ -1,11 +1,10 @@
-package com.krech.botv3;
+package com.krech.botv3.service;
 
 import com.krech.botv3.domain.IndexObject;
 import com.krech.botv3.domain.WordObject;
 import com.krech.botv3.domain.rest.request.WordRequest;
 import com.krech.botv3.repository.IndexRepository;
 import com.krech.botv3.service.WordService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -152,10 +151,17 @@ class WordServiceTest {
         assertEquals(wordObjectExpected.getName(), result.getName());
         assertEquals(wordObjectExpected.getFirstLetter(), result.getFirstLetter());
         verify(indexRepository, times(1)).deleteAll();
+    }
+
+    @Test
+    void saveOneWordTestOfException() {
+        WordRequest wordRequest = new WordRequest("Феникс", "Ф");
+        WordObject wordObject = new WordObject(wordRequest.getWord(), wordRequest.getFirstLetter());
 
         when(wordRepository.findByName(wordRequest.getWord())).thenReturn(wordObject);
         assertThrows(IllegalArgumentException.class, () -> wordService.saveOneWord(wordRequest));
     }
+
 
 
     @Test
@@ -163,7 +169,6 @@ class WordServiceTest {
 
         char[] chars = new char[]{'Ф', 'е', 'и', 'к'};
         Set<WordObject> words = new HashSet<>();
-        Set<WordObject> wordsInIndexObject = new HashSet<>();
         WordObject fenix = new WordObject("Феникс", "Ф");
         WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
         words.add(fenix);
@@ -171,34 +176,39 @@ class WordServiceTest {
         IndexObject indexObject = new IndexObject();
         indexObject.setFirstLetter("Ф");
         indexObject.setOtherLetters("еик");
-        indexObject.setWords(wordsInIndexObject);
+        indexObject.setWords(new HashSet<>());
 
         when(indexRepository.findByFirstLetterAndOtherLetters("Ф", "еик")).thenReturn(indexObject);
 
         wordService.saveIndex(chars, words);
 
-        verify(indexRepository, times(1)).save(any());
+        ArgumentCaptor<IndexObject> captor = ArgumentCaptor.forClass(IndexObject.class);
+        verify(indexRepository, times(1)).save(captor.capture());
+        assertEquals("Ф", captor.getValue().getFirstLetter());
+        assertEquals("еик", captor.getValue().getOtherLetters());
+        assertTrue(captor.getValue().getWords().contains(fenix));
+        assertTrue(captor.getValue().getWords().contains(fenixyatina));
     }
 
     @Test
     void saveIndexTestWhenIndexObjectEqNull() {
         char[] chars = new char[]{'Ф', 'е', 'и', 'к'};
         Set<WordObject> words = new HashSet<>();
-        Set<WordObject> wordsInIndexObject = new HashSet<>();
         WordObject fenix = new WordObject("Феникс", "Ф");
         WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
         words.add(fenix);
         words.add(fenixyatina);
-        IndexObject indexObject = new IndexObject();
-        indexObject.setFirstLetter("Ф");
-        indexObject.setOtherLetters("еик");
-        indexObject.setWords(wordsInIndexObject);
 
         when(indexRepository.findByFirstLetterAndOtherLetters("Ф", "еик")).thenReturn(null);
 
         wordService.saveIndex(chars, words);
 
-        verify(indexRepository, times(1)).save(any());
+        ArgumentCaptor<IndexObject> captor = ArgumentCaptor.forClass(IndexObject.class);
+        verify(indexRepository, times(1)).save(captor.capture());
+        assertEquals("Ф", captor.getValue().getFirstLetter());
+        assertEquals("еик", captor.getValue().getOtherLetters());
+        assertTrue(captor.getValue().getWords().contains(fenix));
+        assertTrue(captor.getValue().getWords().contains(fenixyatina));
     }
 
     @Test
@@ -210,20 +220,27 @@ class WordServiceTest {
     }
 
     @Test
-    void saveManyWord() {
+    void saveManyWordsTest() {
         List<WordObject> listOfWordObject = new ArrayList<>();
         WordObject fenix = new WordObject("Феникс", "Ф");
         WordObject fenixyatina = new WordObject("Фениксятина", "Ф");
         listOfWordObject.add(fenix);
         listOfWordObject.add(fenixyatina);
 
-        wordService.saveManyWord(listOfWordObject);
+        wordService.saveManyWords(listOfWordObject);
 
-        verify(wordRepository, times(2)).save(any());
-    }
+        ArgumentCaptor<WordObject> captor = ArgumentCaptor.forClass(WordObject.class);
+
+        verify(wordRepository, times(2)).save(captor.capture());
+        assertEquals("Феникс", captor.getAllValues().get(0).getName());
+        assertEquals("Ф", captor.getAllValues().get(0).getFirstLetter());
+        assertEquals("Фениксятина", captor.getAllValues().get(1).getName());
+        assertEquals("Ф", captor.getAllValues().get(1).getFirstLetter());
+        assertEquals(2,captor.getAllValues().size());
+        }
 
     @Test
-    void updateOneWord() {
+    void updateOneWordTest() {
         WordRequest wordRequest = new WordRequest("Феникс", "Ф");
         String oldWord = "Фенекс";
         WordObject oldWordObject = new WordObject("Фенекс","Ф");
@@ -233,16 +250,15 @@ class WordServiceTest {
         wordService.updateOneWord(oldWord, wordRequest);
 
         verify(indexRepository, times(1)).deleteAll();
-        verify(wordRepository, times(1)).save(oldWordObject);
+        verify(wordRepository, times(1)).save(eq(oldWordObject));
         assertEquals(wordRequest.getWord(), oldWordObject.getName());
         assertEquals(wordRequest.getFirstLetter(), oldWordObject.getFirstLetter());
     }
 
     @Test
-    void updateOneWordOfException() {
+    void updateOneWordTestOfException() {
         WordRequest wordRequest = new WordRequest("Феникс", "Ф");
         String oldWord = "Фенекс";
-        WordObject oldWordObject = new WordObject("Фенекс","Ф");
 
         when(wordRepository.findByName(oldWord)).thenReturn(null);
 
@@ -250,7 +266,7 @@ class WordServiceTest {
     }
 
     @Test
-    void deleteOneWordOfException() {
+    void deleteOneWordTestOfException() {
         String request = "Феникс";
 
         when(wordRepository.findByName(request)).thenReturn(null);
@@ -259,7 +275,7 @@ class WordServiceTest {
     }
 
     @Test
-    void deleteOneWord () {
+    void deleteOneWordTest () {
         String request = "Феникс";
         WordObject wordObject = new WordObject("Феникс","Ф");
 

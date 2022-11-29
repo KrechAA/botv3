@@ -81,7 +81,7 @@ public class WordService {
      * Получаем список слов и сохраняем в репозиторий
      */
     @Transactional
-    public void saveManyWord(List<WordObject> listOfWordObject) {
+    public void saveManyWords(List<WordObject> listOfWordObject) {
         for (WordObject wordObject : listOfWordObject) {
             wordRepository.save(wordObject);
 

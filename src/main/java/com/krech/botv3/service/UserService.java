@@ -59,7 +59,7 @@ public class UserService {
         User existingUser = userRepository.findById(userId).orElseThrow(() ->  {
             throw new IllegalArgumentException("Can't find user by id " + userId);
         });
-        if (request.getPassword() != null && "".equals(request.getPassword())) {
+        if (request.getPassword() != null && !"".equals(request.getPassword())) {  //почему изначально второе условие было без ! ???
             existingUser.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
         }
         existingUser.setName(request.getName());
