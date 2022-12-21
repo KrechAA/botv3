@@ -23,8 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
@@ -32,6 +31,8 @@ class FileServiceTest {
     @Mock
     WordRepository wordRepository;
 
+    @Mock
+    MultipartFile multipartFile;
 
     FileService fileService;
 
@@ -57,6 +58,26 @@ class FileServiceTest {
         assertEquals("Фениксятина", captor.getValue().get(1).getName());
         assertEquals("Фениксоид", captor.getValue().get(2).getName());
     }
+    @Test
+    void readWordsFromFileTest2() throws IOException {
+
+        File file  = new File("src/main/resources/forTest.txt");
+        FileInputStream input = new FileInputStream(file);
+
+        when(multipartFile.getInputStream()).thenReturn(input);
+
+        fileService.readWordsFromFile(multipartFile);
+
+        ArgumentCaptor<List<WordObject>> captor = ArgumentCaptor.forClass(ArrayList.class);
+        verify(wordRepository, times(1)).saveAll(captor.capture());
+        assertEquals(3, captor.getValue().size());
+        assertEquals("Феникс", captor.getValue().get(0).getName());
+        assertEquals("Фениксятина", captor.getValue().get(1).getName());
+        assertEquals("Фениксоид", captor.getValue().get(2).getName());
+
+    }
+
+
 
     @Test
     void wordObjectCreatorTest() {

@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +61,9 @@ public class UserService {
         User existingUser = userRepository.findById(userId).orElseThrow(() ->  {
             throw new IllegalArgumentException("Can't find user by id " + userId);
         });
-        if (request.getPassword() != null && !"".equals(request.getPassword())) {  //почему изначально второе условие было без ! ???
+        if (!ObjectUtils.isEmpty(request.getPassword())) {
             existingUser.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
+
         }
         existingUser.setName(request.getName());
         existingUser.setSurname(request.getSurname());
