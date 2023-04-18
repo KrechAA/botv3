@@ -15,6 +15,10 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 
+/**
+ * class for services telegram
+ */
+
 @Service
 @Getter
 public class TelegramService {
@@ -29,6 +33,12 @@ public class TelegramService {
         this.restTemplate = new RestTemplate();
     }
 
+
+    /**
+     * downloading file from telegram
+     * @param fileId
+     * @return file of dictionary
+     */
     public File getDocumentFile(String fileId) {
 
         return restTemplate.execute(
@@ -42,7 +52,11 @@ public class TelegramService {
                 });
     }
 
-
+    /**
+     * preparing url for downloading file of dictionary(all words in DB)
+     * @param fileId
+     * @return
+     */
     private String getDocumentTelegramFileUrl(String fileId) {
         ResponseEntity<ApiResponse<org.telegram.telegrambots.meta.api.objects.File>> response = restTemplate.exchange(
                 MessageFormat.format("{0}bot{1}/getFile?file_id={2}", URL, botToken, fileId),

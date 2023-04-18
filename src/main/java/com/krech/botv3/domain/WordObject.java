@@ -6,6 +6,10 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/**
+ * DTO for words
+ */
+
 @Setter
 @Getter
 @NoArgsConstructor

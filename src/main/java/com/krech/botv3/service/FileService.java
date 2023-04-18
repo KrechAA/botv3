@@ -11,7 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * class for services file of dictionary
+ */
 @Service
 public class FileService {
 
@@ -24,6 +26,11 @@ public class FileService {
     }
 
 
+    /**
+     * read words from file and saving in DB
+     * @param multipartFile from FileController
+     * @throws IOException
+     */
     public void readWordsFromFile(MultipartFile multipartFile) throws IOException {
         InputStream initialStream = multipartFile.getInputStream();
         InputStreamReader isr = new InputStreamReader(initialStream, StandardCharsets.UTF_8);
@@ -33,6 +40,11 @@ public class FileService {
         wordRepository.saveAll(listOfWO);
     }
 
+    /**
+     * read words from file and saving in DB
+     * @param file from telegram MessageHandler
+     * @throws IOException
+     */
     public void readWordsFromTelegramFile(File file) throws IOException {
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
@@ -42,6 +54,11 @@ public class FileService {
     }
 
 
+    /**
+     * create new WordObject for parent method
+     * @param str word in string
+     * @return word in WordObject
+     */
     public WordObject wordObjectCreator(String str) {
         String fL = String.valueOf(str.charAt(0));
         String oL = str.substring(1);

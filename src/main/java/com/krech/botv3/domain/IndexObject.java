@@ -6,6 +6,10 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * DTO for indexes.
+ * Index - all unique client search requests for words.
+ */
 @Getter
 @Setter
 @Entity

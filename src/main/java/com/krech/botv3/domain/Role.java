@@ -3,7 +3,9 @@ package com.krech.botv3.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
+/**
+ * storage of roles
+ */
 @Getter
 @AllArgsConstructor
 public enum Role {

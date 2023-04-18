@@ -4,6 +4,9 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * configuration for telegram
+ */
 @Configuration
 @Getter
 public class TelegramConfig {

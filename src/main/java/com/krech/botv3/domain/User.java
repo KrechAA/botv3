@@ -7,7 +7,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-
+/**
+ * DTO for users
+ */
 @Entity
 @Getter
 @Setter

@@ -21,6 +21,11 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.util.StringUtils.hasText;
+
+
+/**
+ * json web token filter
+ */
 @Component
 public class JwtFilter extends GenericFilterBean {
 

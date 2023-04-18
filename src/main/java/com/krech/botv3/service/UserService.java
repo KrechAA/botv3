@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * class for services user
+ */
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -27,20 +30,39 @@ public class UserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    /**
+     * transport method from UserController to UserRepository. search user by id.
+     * @param userId
+     * @return existing user
+     */
     public User findById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("Can't find user by id " + userId));
     }
 
+    /**
+     * transport method from UserController to UserRepository. search user by login.
+     * @param login
+     * @return existing user
+     */
     public User findByLogin(String login) {
         return userRepository.findByLogin(login).orElseThrow(() -> new NoSuchElementException("Can't find user by login " + login));
     }
 
+    /**
+     * search all users in DB and preparing list
+     * @return list of all users in DB
+     */
     public List<User> findAll() {
         List<User> result = new ArrayList<>();
         userRepository.findAll().forEach(result::add);
         return result;
     }
 
+    /**
+     * create new user in DB
+     * @param request request from UserController
+     * @return new user
+     */
     @Transactional
    public User create(CreateUserBaseRequest request) {
         userRepository.findByLogin(request.getLogin()).ifPresent(user -> {
@@ -55,6 +77,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /**
+     * update existing user in DB
+     * @param userId
+     * @param request request from UserController
+     * @return updated user
+     */
     @Transactional
     public User updateUser(Long userId, UpdateUserRequest request) {
         User existingUser = userRepository.findById(userId).orElseThrow(() ->  {
@@ -70,6 +98,10 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
+    /**
+     * delete user from DB
+     * @param userId
+     */
     @Transactional
     public void deleteById(Long userId) {
         userRepository.deleteById(userId);

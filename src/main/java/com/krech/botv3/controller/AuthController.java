@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * controller for authentication and registration
+ */
 @RestController
 public class AuthController {
     private final UserService userService;
@@ -24,7 +27,11 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-
+    /**
+     * login
+     * @param logInRequest
+     * @return
+     */
     @PostMapping(path = "/auth/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticationResponse> doLogin(@RequestBody LogInRequest logInRequest) {
         User user = userService.findByLoginAndVerifyPassword(logInRequest.getLogin(), logInRequest.getPassword());
@@ -32,7 +39,10 @@ public class AuthController {
         return new ResponseEntity<>(new AuthenticationResponse(jwtToken), HttpStatus.OK);
     }
 
-
+    /**
+     * authentication
+     * @param registerUserRequest
+     */
     @PostMapping(path = "/auth/register")
     public void register(@RequestBody RegisterUserRequest registerUserRequest) {
         userService.create(registerUserRequest);

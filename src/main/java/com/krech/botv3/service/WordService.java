@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 
 import static java.lang.Character.isUpperCase;
 
+
+/**
+ * class for services words
+ */
 @Service
 public class WordService {
 
@@ -30,6 +34,7 @@ public class WordService {
 
 
     /**
+     * method for save one word in DB
      * @param wordRequest request from client
      * @return wordObject to controller
      */
@@ -44,6 +49,7 @@ public class WordService {
     }
 
     /**
+     * method for delete one word from DB
      * @param request request from client to delete one word in repository
      */
     @Transactional
@@ -57,6 +63,7 @@ public class WordService {
     }
 
     /**
+     * update/change one word in DB
      * @param oldWord word before update
      * @param newWord request for update
      * @return updated wordObject
@@ -78,7 +85,8 @@ public class WordService {
 
 
     /**
-     * Получаем список слов и сохраняем в репозиторий
+     * save many words in DB
+     * @param listOfWordObject
      */
     @Transactional
     public void saveManyWords(List<WordObject> listOfWordObject) {
@@ -90,13 +98,14 @@ public class WordService {
 
 
     /**
-     * @param str список запрошенных букв первая буква списка - первая буква слова
-     * @return result
+     * search existing valid words for client
+     * @param str letters from BotController
+     * @return list of valid words for BotController
      */
     public List<String> searchWordsForClient(String str) {
         char[] otherChars = new char[str.length() - 1];
         if (!isUpperCase(str.charAt(0))) {
-            throw new IllegalArgumentException("Первая буква не большая");
+            throw new IllegalArgumentException("First letter does not big");
         } else {
             char[] firstLetter = new char[1];
             firstLetter[0] = str.charAt(0);
@@ -111,7 +120,7 @@ public class WordService {
             try {
                 return searchIndex(charsSort);
             } catch (NoSuchElementException e) {
-                System.out.println("нет подходящего индекса");
+                System.out.println("valid index not found");
 
                 Set<WordObject> setOfWordsInDictionary = new HashSet<>(searchInWords(chars));
                 saveIndex(chars, setOfWordsInDictionary);
@@ -125,11 +134,10 @@ public class WordService {
 
 
     /**
-     * метод ищет наиболее подходящий индекс по запрошенным буквам.
-     * если индекс не найдет, то кидаем NoSuchElementException
-     *
-     * @param chars список запрошенных букв первая буква списка - первая буква слова
-     * @return result
+     * search existing index (previous requests from client and their respective words) in DB.
+     * @param chars letters from parent method
+     * @return list of indexes
+     * @throws NoSuchElementException
      */
     public List<String> searchIndex(char[] chars) throws NoSuchElementException {
         List<String> result = null;
@@ -168,7 +176,8 @@ public class WordService {
     }
 
     /**
-     * @param chars список запрошенных букв первая буква списка - первая буква слова
+     * search words in DB
+     * @param chars letters from parent method
      * @return list of word objects to parent method
      */
     public List<WordObject> searchInWords(char[] chars) {
@@ -185,8 +194,9 @@ public class WordService {
     }
 
     /**
-     * @param chars список запрошенных букв первая буква списка - первая буква слова
-     * @param words список слов найденных по запрошенным буквам
+     * creating adn saving new index and list of and their respective words in DB
+     * @param chars letters from parent method
+     * @param words list of respective words
      */
     @Transactional
     public void saveIndex(char[] chars, Set<WordObject> words) {
@@ -217,6 +227,12 @@ public class WordService {
 
     }
 
+    /**
+     * checking the word for the content of all letters from request
+     * @param word
+     * @param chars
+     * @return true or false
+     */
     public boolean wordHasAllChars(String word, char[] chars) {
         int count = 0;
         char[] charsForOperations = new char[chars.length];

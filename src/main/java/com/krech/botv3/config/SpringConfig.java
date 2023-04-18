@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
+
+/**
+ * configuration for spring webhooks staff
+ */
 @Configuration
 @AllArgsConstructor
 public class SpringConfig {
