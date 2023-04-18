@@ -1,24 +1,16 @@
 package com.krech.botv3.controller;
 
-import com.krech.botv3.config.TelegramConfig;
-import com.krech.botv3.domain.WordObject;
 import com.krech.botv3.service.FileService;
 import com.krech.botv3.service.TelegramService;
 import com.krech.botv3.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -26,8 +18,6 @@ import java.util.List;
 public class MessageHandler {
 
     private final TelegramService telegramService;
-    private final WordController wordController;
-    private final BotController botController;
     private final WordService wordService;
     private final FileService fileService;
 
@@ -37,18 +27,21 @@ public class MessageHandler {
 
         String inputText = message.getText();
 
-        if (inputText.equals("/start")) {
-            return getStartMessage(chatId);
-        } else if (inputText.startsWith("/search")) {
-            return getSearchMessage(chatId, inputText);
-        } else if (message.getCaption().equals("/upload")) {
+        if (message.getCaption().equals("/upload")) {
             if (message.getFrom().getId() == 123205669) {
                 return getUploadMessage(chatId, message.getDocument().getFileId());
             } else {
                 return new SendMessage(chatId, "ты не админ!");
             }
-        } else if (inputText == null && message.getCaption() == null) {
+        }
+        if (inputText == null && message.getCaption() == null) {
             throw new IllegalArgumentException();
+        }
+
+        if (inputText.equals("/start")) {
+            return getStartMessage(chatId);
+        } else if (inputText.startsWith("/search")) {
+            return getSearchMessage(chatId, inputText);
         }
 
         return new SendMessage(chatId, "я не понимаю, чего ты хочешь");

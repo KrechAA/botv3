@@ -3,8 +3,6 @@ package com.krech.botv3.controller;
 import com.krech.botv3.domain.WordObject;
 import com.krech.botv3.domain.rest.request.WordRequest;
 import com.krech.botv3.domain.rest.response.WordResponse;
-import com.krech.botv3.repository.IndexRepository;
-import com.krech.botv3.repository.WordRepository;
 import com.krech.botv3.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
